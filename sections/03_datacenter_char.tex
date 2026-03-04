@@ -1,62 +1,108 @@
-\begin{frame}{Раздел 3: Характеристика рабочей нагрузки разработки LLM}
+\begin{frame}{Длительность выполнения задач}
+    Средняя длительность выполнения задач в \textbf{2.7--12.8×} \textit{короче}, чем в других DL-трейсах.\\
+    Причины:
     \begin{itemize}
-        \item \textbf{Цель:} Сравнить LLM с предыдущими DL нагрузками и выявить особенности использования ресурсов и сбоев.
-        \item \textbf{Методология:} Анализ 6-месячных логов (март-август 2023) из датацентров Seren и Kalos (всего 4704 GPU A100).
-        \item \textbf{Типы работ:} Претренинг (Pretraining), дообучение (Fine-tuning), выравнивание (Alignment), оценка (Evaluation), подготовка данных (Data preparation).
+        \item Много небольших задач для GPU.
+        \item Одна задача использует всего от 5-20 GPU.
+        \item Много задач, которые нельзя выполнить.
     \end{itemize}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{"figures/job_duration_cdf.png"}\\
+        {\tiny среднее выполнение задачи на GPU (минуты)}
+    \end{center}
 \end{frame}
 
-\begin{frame}{3.2 Характеристики рабочей нагрузки}
+\begin{frame}{Нагрузка на GPU}
     \begin{itemize}
-        \item \textbf{Длительность работ:} В среднем 2.7--12.8x \textbf{короче}, чем в предыдущих DL трейсах (из-за большого числа коротких задач оценки).
-        \item \textbf{Задержка в очереди:}
-            \begin{itemize}
-                \item Вопреки прошлым выводам, \textbf{крупные} задачи (претренинг) имеют \textbf{меньшую} задержку (медиана 28 сек в Kalos).
-                \item \textbf{Короткие} задачи оценки ждут дольше всех (медиана 7.8 мин в Kalos), так как используют только остаточные ресурсы.
-            \end{itemize}
-        \item \textbf{Распределение потребления ресурсов (Kalos):}
-            \begin{itemize}
-                \item Претренинг: 3.2\% работ, но \textbf{94.0\% GPU-времени}.
-                \item Оценка: 92.9\% работ, но лишь \textbf{0.8\% GPU-времени}.
-            \end{itemize}
+        \item LLM - вычислительно зависимые системы.
+        \item Много задач не доходит до GPU, отсеиваясь еще на этапе инициализации.
     \end{itemize}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{"figures/median_utilization.png"}\\
+        {\tiny среднее использование GPU}
+    \end{center}
 \end{frame}
 
-\begin{frame}{3.3 Структура использования ресурсов}
+\begin{frame}{Распределение нагрузки}
     \begin{itemize}
-        \item \textbf{Высокая утилизация GPU:}
-            \begin{itemize}
-                \item Память GPU (медиана 75\%, 60 ГБ) и вычислительная способность (медиана 99\% в Kalos) загружены сильно.
-                \item Это намного выше, чем в старых DL трейсах (PAI: 10\% и 4\%).
-                \item Вывод: LLM интенсивны к вычислениям и памяти; методы разделения GPU (\textit{GPU sharing}) неэффективны.
-            \end{itemize}
-        \item \textbf{Недоиспользование сопутствующих ресурсов:}
-            \begin{itemize}
-                \item CPU, хост-память и сеть загружены слабо (CPU в Kalos в среднем на 20\%).
-                \item Основной бутылочное горлышко — операции ввода-вывода при подготовке данных.
-            \end{itemize}
+        \item Половина задач может выполнятся только на 1 GPU.
+        \item Большую часть времени занимают задачи, где требуется много GPU.
     \end{itemize}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{"figures/workload_dist.png"}\\
+        {\tiny распределение нагрузки в зависимости от количества запрошенных GPU}
+    \end{center}
 \end{frame}
 
-\begin{frame}{3.3 Длительный простой GPU при оценке}
-    \begin{itemize}
-        \item Профилирование задачи \texttt{HumanEval} показало:
+\begin{frame}{Задержка в очереди (Queuing Delay)}
+    \begin{columns}
+        \column{0.5\textwidth}
             \begin{itemize}
-                \item \textbf{29.5\% времени:} Загрузка модели и предобработка данных (CPU/диск).
-                \item \textbf{19.0\% времени:} Тестирование синтезированных программ (CPU).
-                \item \textbf{Только 51.5\% времени:} Непосредственно инференс на GPU.
+                \item \textbf{Крупные} задачи претренинга ждут меньше (медиана 28 с).
+                \item \textbf{Короткие} задачи оценки — дольше всех (медиана 7.8 мин).
+                \item Причина: приоритетное резервирование ресурсов под претренинг.
             \end{itemize}
-        \item \textbf{Проблема:} GPU простаивает почти половину времени выполнения задачи оценки, что снижает эффективность и увеличивает задержки в очереди.
-    \end{itemize}
+        \column{0.5\textwidth}
+            \begin{center}
+                \includegraphics[width=0.8\textwidth]{figures/queuing_delay.png} \\
+                {\tiny Рис. 5: Задержка очереди по типам задач}
+            \end{center}
+    \end{columns}
 \end{frame}
 
-\begin{frame}{3.4 Анализ сбоев}
-    \begin{itemize}
-        \item \textbf{Типы ошибок:}
+\begin{frame}{Потребление GPU-времени (Kalos)}
+    \begin{columns}
+        \column{0.5\textwidth}
             \begin{itemize}
-                \item \textbf{На старте (быстрое завершение):} Ошибки конфигурации, некорректные пути к данным (в основном для коротких задач).
-                \item \textbf{Во время выполнения:} Сбои оборудования (GPU, InfiniBand, диск), характерные для долгих задач претренинга.
+                \item Претренинг: \textbf{3.2\%} заданий, но \textbf{94\%} GPU-времени.
+                \item Оценка: \textbf{92.9\%} заданий, но лишь \textbf{0.8\%} GPU-времени.
             \end{itemize}
-        \item \textbf{Влияние:} Сбои инфраструктуры сильно снижают эффективность претренинга, требуя быстрой диагностики и восстановления.
-    \end{itemize}
+        \column{0.5\textwidth}
+            \begin{center}
+                \includegraphics[width=0.8\textwidth]{figures/gpu_time_pie.png} \\
+                {\tiny Рис. 6: Распределение GPU-времени}
+            \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Утилизация GPU: память и вычисления}
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{itemize}
+                \item Память GPU: медиана \textbf{75\%} (60 ГБ).
+                \item Вычисления: медиана \textbf{99\%} (Kalos).
+                \item Значительно выше, чем в старых DL-трейсах (PAI: 10\%/4\%).
+            \end{itemize}
+        \column{0.5\textwidth}
+            \begin{center}
+                \includegraphics[width=\textwidth]{figures/gpu_mem_util.png} \\
+                {\tiny Рис. 7: CDF использования памяти GPU}
+                \vspace{2mm}
+                \includegraphics[width=\textwidth]{figures/gpu_compute_util.png} \\
+                {\tiny Рис. 8: CDF загрузки вычислений GPU}
+            \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Недоиспользование CPU и простои GPU при оценке}
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{itemize}
+                \item CPU загружен в среднем на \textbf{20\%} (Kalos).
+                \item В задаче \texttt{HumanEval} GPU простаивает \textbf{48.5\%} времени:
+                    \begin{itemize}
+                        \tiny
+                        \item 29.5\% — загрузка модели / предобработка
+                        \item 19.0\% — тестирование программ (CPU)
+                    \end{itemize}
+            \end{itemize}
+        \column{0.5\textwidth}
+            \begin{center}
+                \includegraphics[width=\textwidth]{figures/cpu_util.png} \\
+                {\tiny Рис. 9: CDF загрузки CPU}
+                \vspace{2mm}
+                \includegraphics[width=\textwidth]{figures/eval_breakdown.png} \\
+                {\tiny Рис. 10: Разбивка времени задачи оценки}
+            \end{center}
+    \end{columns}
 \end{frame}
