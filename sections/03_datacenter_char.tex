@@ -34,75 +34,17 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Задержка в очереди (Queuing Delay)}
+\begin{frame}{Нагрузка на инфраструктуру}
     \begin{columns}
-        \column{0.5\textwidth}
+        \column{0.3\textwidth}
             \begin{itemize}
-                \item \textbf{Крупные} задачи претренинга ждут меньше (медиана 28 с).
-                \item \textbf{Короткие} задачи оценки — дольше всех (медиана 7.8 мин).
-                \item Причина: приоритетное резервирование ресурсов под претренинг.
+                \item Большое потребление памяти GPU, уже при около 75\% нагрузке.
+                \item Медианное использование SM 40\% (1 GPU может выполнять несколько задач).
             \end{itemize}
-        \column{0.5\textwidth}
+        \column{0.7\textwidth}
             \begin{center}
-                \includegraphics[width=0.8\textwidth]{figures/queuing_delay.png} \\
-                {\tiny Рис. 5: Задержка очереди по типам задач}
-            \end{center}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Потребление GPU-времени (Kalos)}
-    \begin{columns}
-        \column{0.5\textwidth}
-            \begin{itemize}
-                \item Претренинг: \textbf{3.2\%} заданий, но \textbf{94\%} GPU-времени.
-                \item Оценка: \textbf{92.9\%} заданий, но лишь \textbf{0.8\%} GPU-времени.
-            \end{itemize}
-        \column{0.5\textwidth}
-            \begin{center}
-                \includegraphics[width=0.8\textwidth]{figures/gpu_time_pie.png} \\
-                {\tiny Рис. 6: Распределение GPU-времени}
-            \end{center}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Утилизация GPU: память и вычисления}
-    \begin{columns}
-        \column{0.5\textwidth}
-            \begin{itemize}
-                \item Память GPU: медиана \textbf{75\%} (60 ГБ).
-                \item Вычисления: медиана \textbf{99\%} (Kalos).
-                \item Значительно выше, чем в старых DL-трейсах (PAI: 10\%/4\%).
-            \end{itemize}
-        \column{0.5\textwidth}
-            \begin{center}
-                \includegraphics[width=\textwidth]{figures/gpu_mem_util.png} \\
-                {\tiny Рис. 7: CDF использования памяти GPU}
-                \vspace{2mm}
-                \includegraphics[width=\textwidth]{figures/gpu_compute_util.png} \\
-                {\tiny Рис. 8: CDF загрузки вычислений GPU}
-            \end{center}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Недоиспользование CPU и простои GPU при оценке}
-    \begin{columns}
-        \column{0.5\textwidth}
-            \begin{itemize}
-                \item CPU загружен в среднем на \textbf{20\%} (Kalos).
-                \item В задаче \texttt{HumanEval} GPU простаивает \textbf{48.5\%} времени:
-                    \begin{itemize}
-                        \tiny
-                        \item 29.5\% — загрузка модели / предобработка
-                        \item 19.0\% — тестирование программ (CPU)
-                    \end{itemize}
-            \end{itemize}
-        \column{0.5\textwidth}
-            \begin{center}
-                \includegraphics[width=\textwidth]{figures/cpu_util.png} \\
-                {\tiny Рис. 9: CDF загрузки CPU}
-                \vspace{2mm}
-                \includegraphics[width=\textwidth]{figures/eval_breakdown.png} \\
-                {\tiny Рис. 10: Разбивка времени задачи оценки}
+                \includegraphics[width=0.8\textwidth]{"figures/infrastructure_util.png"} \\
+                {\tiny SM - Streaming Multicore, TC - Tensor Core}
             \end{center}
     \end{columns}
 \end{frame}
