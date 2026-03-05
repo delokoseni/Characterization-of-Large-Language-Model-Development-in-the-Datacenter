@@ -1,67 +1,29 @@
-\documentclass{beamer}
-\usepackage[T2A]{fontenc} % Без этого с компилятором pdflatex не работает
-\usepackage[utf8]{inputenc} % Без этого с компилятором pdflatex не работает
-\usepackage[russian]{babel} % Без этого с компилятором pdflatex не работает
-\usetheme{Madrid} 
-\usecolortheme{seahorse}
-\setbeamertemplate{footline}{%
-	\leavevmode%
-	\hbox{%
-		\begin{beamercolorbox}[wd=.6\paperwidth,ht=2.5ex,dp=1ex,left]{palette primary}%
-			\hspace{0.5em}Студенты АлтГТУ, группа 8 ПИ-51
-		\end{beamercolorbox}%
-		\begin{beamercolorbox}[wd=.4\paperwidth,ht=2.5ex,dp=1ex,right]{palette primary}%
-			\insertshortdate\hspace{1em}\insertframenumber/\inserttotalframenumber\hspace{0.5em}
-		\end{beamercolorbox}%
-	}%
-	\vskip 0pt%
-}
-
-\title{Обзор статьи}
-\subtitle{Characterization of Large Language Model Development in the Datacenter\\
-	Характеризация разработки больших языковых моделей в дата-центре}
-
-\author{
-	Студенты АлтГТУ, группа 8 ПИ-51\\
-	Бельш А.Е.\\
-	Воробьев К.В.\\
-	Мэн Ч.\\
-	Ошурков Н.А.
-}
-
-\date{2026 г.}
-
-\begin{document}
-	
-	
-	\begin{frame}{Ключевые выводы статьи}
-		\begin{itemize}
-			\item LLM-нагрузки отличаются от классического DL
-			\item Сеть и межузловые коммуникации становятся критическим фактором
-			\item Отказы оказывают сильное влияние при длительном pretraining
-			\item Существующие кластеры не оптимизированы под масштаб LLM
-		\end{itemize}
+\begin{frame}{Ключевые выводы статьи}
+	\begin{itemize}
+		\item LLM-нагрузки отличаются от классического DL
+		\item Сеть и межузловые коммуникации становятся критическим фактором
+		\item Отказы оказывают сильное влияние при длительном pretraining
+		\item Существующие кластеры не оптимизированы под масштаб LLM
+	\end{itemize}
 		
-		\vspace{0.3cm}
-		\textbf{Главный результат:} обучение LLM требует специализированной
-		архитектуры и системной оптимизации.
-	\end{frame}
+	\vspace{0.3cm}
+	\textbf{Главный результат:} обучение LLM требует специализированной
+	архитектуры и системной оптимизации.
+\end{frame}
 	
-	\begin{frame}{Направления развития}
-		\begin{itemize}
-			\item Оптимизация long-sequence pretraining
-			\item Улучшение поддержки MoE
-			\item Повышение эффективности RLHF
-			\item Модернизация сетевой инфраструктуры (NIC)
-			\item Расширение кластера для более масштабных моделей
-		\end{itemize}
+\begin{frame}{Направления развития}
+	\begin{itemize}
+		\item Оптимизация long-sequence pretraining
+		\item Улучшение поддержки MoE
+		\item Повышение эффективности RLHF
+		\item Модернизация сетевой инфраструктуры (NIC)
+		\item Расширение кластера для более масштабных моделей
+	\end{itemize}
 		
-		\vspace{0.3cm}
-		\textbf{Итог:} статья формирует инженерные принципы построения
-		дата-центров для LLM.
-	\end{frame}
+	\vspace{0.3cm}
+	\textbf{Итог:} статья формирует инженерные принципы построения
+	дата-центров для LLM.
+\end{frame}
 	
-	\frame{\titlepage}
-\end{document}
 
 
